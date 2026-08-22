@@ -82,6 +82,11 @@
   button.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   button.btn[aria-pressed="true"] { border-color: var(--gold); color: var(--gold-bright); background: linear-gradient(180deg, #3b2c19, #1d1509); }
 
+  .hide-btn { display: inline-flex; align-items: center; gap: 8px; }
+  .hide-btn .eye-off { display: none; }
+  .hide-btn[aria-pressed="true"] .eye { display: none; }
+  .hide-btn[aria-pressed="true"] .eye-off { display: inline; }
+
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
   .chip {
     font-family: inherit; font-size: 14px; cursor: pointer; letter-spacing: normal;
@@ -113,6 +118,7 @@
   }
   li.row:hover { border-color: #5c4726; background: linear-gradient(180deg, rgba(45,34,20,0.6), rgba(16,12,8,0.6)); }
   li.row.done { opacity: 0.55; border-color: #2c3a28; }
+  li.row.vanish { opacity: 0; transform: translateX(14px) scale(0.98); transition: opacity 0.24s ease, transform 0.24s ease; }
   li.row.done .name { color: var(--done); text-decoration: line-through; }
 
   label.box { display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; cursor: pointer; flex: 0 0 44px; }
@@ -165,7 +171,11 @@
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="#c7a349" stroke-width="1.6"/><path d="M10.5 10.5 L15 15" stroke="#c7a349" stroke-width="1.6" stroke-linecap="round"/></svg>
         <input id="q" type="search" placeholder="Tìm runeword, rune hoặc loại phôi…" aria-label="Tìm runeword, rune hoặc loại phôi" autocomplete="off" />
       </div>
-      <button class="btn" id="todoOnly" type="button" aria-pressed="false">Chỉ hiện chưa làm</button>
+      <button class="btn hide-btn" id="todoOnly" type="button" aria-pressed="false">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="eye"><path d="M1 8s2.6-4.2 7-4.2S15 8 15 8s-2.6 4.2-7 4.2S1 8 1 8z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.9" fill="currentColor"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="eye-off"><path d="M1 8s2.6-4.2 7-4.2S15 8 15 8s-2.6 4.2-7 4.2S1 8 1 8z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 13.5 13.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span id="todoLabel">Ẩn món đã check</span>
+      </button>
       <button class="btn" id="reset" type="button">Xoá tiến độ</button>
     </div>
 
@@ -195,8 +205,15 @@ const GROUPS = [
   { id: "bow", label: "Cung / Nỏ", test: b => /cung|nỏ/i.test(b) },
 ];
 
-let state = { q: "", group: "all", todoOnly: false };
 let done = load();
+let state = { q: "", group: "all", todoOnly: loadHide() };
+
+function loadHide() {
+  try { return localStorage.getItem(KEY + "-hide") === "1"; } catch (e) { return false; }
+}
+function saveHide() {
+  try { localStorage.setItem(KEY + "-hide", state.todoOnly ? "1" : "0"); } catch (e) {}
+}
 
 function load() {
   try { return new Set(JSON.parse(localStorage.getItem(KEY) || "[]")); }
@@ -241,7 +258,10 @@ function render() {
   document.getElementById("fill").style.width = pct + "%";
   document.getElementById("bar").setAttribute("aria-valuenow", String(pct));
   document.getElementById("count").innerHTML =
-    "<b>" + doneCount + "</b> / " + total + " runeword đã làm · <b>" + pct + "%</b> · đang hiện <b>" + list.length + "</b>";
+    "<b>" + doneCount + "</b> / " + total + " runeword đã làm · <b>" + pct + "%</b> · đang hiện <b>" + list.length + "</b>" +
+    (state.todoOnly && doneCount ? ' · đang ẩn <b>' + doneCount + "</b> món đã check" : "");
+
+  document.getElementById("todoLabel").textContent = state.todoOnly ? "Đang ẩn món đã check" : "Ẩn món đã check";
 
   if (!list.length) {
     out.innerHTML = '<div class="panel empty">Không tìm thấy runeword nào khớp. Thử từ khoá khác nha.</div>';
@@ -288,9 +308,11 @@ chips.addEventListener("click", e => {
 document.getElementById("q").addEventListener("input", e => { state.q = e.target.value; render(); });
 
 const todoBtn = document.getElementById("todoOnly");
+todoBtn.setAttribute("aria-pressed", String(state.todoOnly));
 todoBtn.addEventListener("click", () => {
   state.todoOnly = !state.todoOnly;
   todoBtn.setAttribute("aria-pressed", String(state.todoOnly));
+  saveHide();
   render();
 });
 
@@ -303,6 +325,14 @@ document.getElementById("out").addEventListener("change", e => {
   if (cb.type !== "checkbox") return;
   if (cb.checked) done.add(cb.dataset.name); else done.delete(cb.dataset.name);
   save();
+  if (state.todoOnly && cb.checked) {
+    const row = cb.closest("li.row");
+    if (row) {
+      row.classList.add("vanish");
+      setTimeout(render, 260);
+      return;
+    }
+  }
   render();
 });
 
