@@ -87,7 +87,12 @@
   .hide-btn[aria-pressed="true"] .eye { display: none; }
   .hide-btn[aria-pressed="true"] .eye-off { display: inline; }
 
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .filterrow { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+  .flabel {
+    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: #7d7263;
+    flex: 0 0 96px; padding-top: 1px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1 1 auto; }
   .chip {
     font-family: inherit; font-size: 14px; cursor: pointer; letter-spacing: normal;
     padding: 7px 12px; border-radius: 999px; min-height: 32px;
@@ -179,7 +184,14 @@
       <button class="btn" id="reset" type="button">Xoá tiến độ</button>
     </div>
 
-    <div class="chips" id="chips" role="group" aria-label="Lọc theo nhóm trang bị"></div>
+    <div class="filterrow">
+      <span class="flabel">Kiểu món</span>
+      <div class="chips" id="chips" role="group" aria-label="Lọc theo kiểu món"></div>
+    </div>
+    <div class="filterrow">
+      <span class="flabel">Số socket</span>
+      <div class="chips" id="sockChips" role="group" aria-label="Lọc theo số socket"></div>
+    </div>
 
     <div class="statusbar">
       <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Tiến độ hoàn thành" id="bar"><i id="fill"></i></div>
@@ -205,8 +217,10 @@ const GROUPS = [
   { id: "bow", label: "Cung / Nỏ", test: b => /cung|nỏ/i.test(b) },
 ];
 
+const SOCKETS = [...new Set(DATA.map(r => r.sockets))].sort((a, b) => a - b);
+
 let done = load();
-let state = { q: "", group: "all", todoOnly: loadHide() };
+let state = { q: "", group: "all", sock: "all", todoOnly: loadHide() };
 
 function loadHide() {
   try { return localStorage.getItem(KEY + "-hide") === "1"; } catch (e) { return false; }
@@ -243,6 +257,7 @@ function runeHtml(runes, q) {
 function matches(rw) {
   const g = GROUPS.find(x => x.id === state.group);
   if (g && !g.test(rw.base)) return false;
+  if (state.sock !== "all" && rw.sockets !== state.sock) return false;
   if (state.todoOnly && done.has(rw.name)) return false;
   const q = norm(state.q).trim();
   if (!q) return true;
@@ -302,6 +317,17 @@ chips.addEventListener("click", e => {
   if (!b) return;
   state.group = b.dataset.g;
   chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
+  render();
+});
+
+const sockChips = document.getElementById("sockChips");
+sockChips.innerHTML = '<button class="chip" type="button" data-s="all" aria-pressed="true">Tất cả</button>' +
+  SOCKETS.map(s => '<button class="chip" type="button" data-s="' + s + '" aria-pressed="false">' + s + " socket</button>").join("");
+sockChips.addEventListener("click", e => {
+  const b = e.target.closest(".chip");
+  if (!b) return;
+  state.sock = b.dataset.s === "all" ? "all" : Number(b.dataset.s);
+  sockChips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
   render();
 });
 
