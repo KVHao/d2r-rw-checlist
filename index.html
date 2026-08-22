@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Runeword Checklist — Diablo II: Resurrected</title>
+<style>
+  :root {
+    --gold: #c7a349;
+    --gold-bright: #e8cf8a;
+    --rune: #d78a34;
+    --text: #d8ceb8;
+    --dim: #94886f;
+    --panel: rgba(18, 14, 10, 0.88);
+    --border: #4a3a22;
+    --blood: #8e2b20;
+    --done: #6f9d63;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Times New Roman", "Liberation Serif", "Tinos", "Cambria", "DejaVu Serif", "Noto Serif", serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    font-variant-ligatures: none;
+    letter-spacing: normal;
+    color: var(--text);
+    background-color: #0a0806;
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(120, 78, 30, 0.35), transparent 60%),
+      radial-gradient(ellipse at 50% 110%, rgba(90, 20, 12, 0.28), transparent 60%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.014) 0 2px, transparent 2px 5px),
+      linear-gradient(180deg, #0d0a07, #060504);
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 24px 24px 64px; }
+
+  header { text-align: center; margin-bottom: 20px; }
+  h1 {
+    font-size: 30px; letter-spacing: 3px; text-transform: uppercase;
+    margin: 0 0 6px; color: var(--gold-bright); font-weight: normal;
+    text-shadow: 0 0 14px rgba(199, 163, 73, 0.35), 0 2px 0 #000;
+  }
+  .sub { color: var(--dim); font-size: 15px; font-style: italic; letter-spacing: 0.5px; }
+  .rule {
+    height: 1px; margin: 14px auto 0; max-width: 620px;
+    background: linear-gradient(90deg, transparent, var(--border), var(--gold), var(--border), transparent);
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.45);
+  }
+
+  .controls { padding: 16px; margin-bottom: 16px; }
+  .searchrow { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .search {
+    flex: 1 1 260px; position: relative; min-width: 220px;
+  }
+  .search input {
+    width: 100%; padding: 12px 14px 12px 40px; letter-spacing: normal;
+    background: #100c08; color: var(--gold-bright);
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: inherit; font-size: 16px; min-height: 44px;
+  }
+  .search input::placeholder { color: #6d6353; font-style: italic; }
+  .search input:focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+  .search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); opacity: 0.65; }
+
+  button.btn {
+    font-family: inherit; font-size: 14px; cursor: pointer;
+    min-height: 44px; padding: 10px 16px; border-radius: 6px;
+    background: linear-gradient(180deg, #2a2016, #16110b);
+    color: var(--text); border: 1px solid var(--border);
+    letter-spacing: normal;
+  }
+  button.btn:hover { border-color: var(--gold); color: var(--gold-bright); }
+  button.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button.btn[aria-pressed="true"] { border-color: var(--gold); color: var(--gold-bright); background: linear-gradient(180deg, #3b2c19, #1d1509); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip {
+    font-family: inherit; font-size: 14px; cursor: pointer; letter-spacing: normal;
+    padding: 7px 12px; border-radius: 999px; min-height: 32px;
+    background: rgba(255,255,255,0.03); color: var(--dim);
+    border: 1px solid #33281a;
+  }
+  .chip:hover { color: var(--gold-bright); border-color: var(--gold); }
+  .chip[aria-pressed="true"] { background: rgba(199,163,73,0.14); color: var(--gold-bright); border-color: var(--gold); }
+  .chip:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .statusbar { display: flex; align-items: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+  .bar { flex: 1 1 200px; height: 12px; background: #120d09; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #7a5a1f, var(--gold), var(--gold-bright)); transition: width 0.25s ease; }
+  .count { font-size: 14px; color: var(--dim); white-space: nowrap; letter-spacing: normal; }
+  .count b { color: var(--gold-bright); font-weight: normal; }
+
+  .group-title {
+    margin: 26px 0 10px; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--dim); display: flex; align-items: center; gap: 12px;
+  }
+  .group-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+  ul.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+  li.row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px; border: 1px solid #2b2116; border-radius: 8px;
+    background: linear-gradient(180deg, rgba(30,23,15,0.55), rgba(12,9,6,0.55));
+  }
+  li.row:hover { border-color: #5c4726; background: linear-gradient(180deg, rgba(45,34,20,0.6), rgba(16,12,8,0.6)); }
+  li.row.done { opacity: 0.55; border-color: #2c3a28; }
+  li.row.done .name { color: var(--done); text-decoration: line-through; }
+
+  label.box { display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; cursor: pointer; flex: 0 0 44px; }
+  label.box input {
+    appearance: none; -webkit-appearance: none;
+    width: 22px; height: 22px; margin: 0; cursor: pointer;
+    border: 1px solid #6b5427; border-radius: 4px;
+    background: linear-gradient(180deg, #221a10, #0e0a06);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+    position: relative;
+  }
+  label.box input:hover { border-color: var(--gold); }
+  label.box input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  label.box input:checked { border-color: #5f7d55; background: linear-gradient(180deg, #22301d, #101609); }
+  label.box input:checked::after {
+    content: ""; position: absolute; left: 5px; top: 9px; width: 10px; height: 5px;
+    border-left: 2px solid var(--done); border-bottom: 2px solid var(--done);
+    transform: rotate(-45deg);
+  }
+  .body { flex: 1; min-width: 0; }
+  .name { color: var(--gold-bright); font-size: 18px; letter-spacing: 0.5px; }
+  .meta { font-size: 14px; color: var(--dim); margin-top: 2px; letter-spacing: normal; }
+  .meta .sock { color: var(--text); }
+  .runes { margin-top: 4px; font-size: 14px; color: var(--rune); }
+  .runes .sep { color: #5d4a2c; padding: 0 2px; }
+  .runes .hi { background: rgba(199,163,73,0.22); border-radius: 3px; padding: 0 2px; color: var(--gold-bright); }
+  .name .hi { background: rgba(199,163,73,0.25); border-radius: 3px; padding: 0 2px; }
+
+  .empty { text-align: center; color: var(--dim); font-style: italic; padding: 40px 16px; letter-spacing: normal; }
+  footer { text-align: center; color: #5f5645; font-size: 13px; margin-top: 30px; letter-spacing: normal; }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 16px 16px 48px; }
+    h1 { font-size: 22px; letter-spacing: 2px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Runeword Checklist</h1>
+    <div class="sub">Diablo II: Resurrected — Horadric Archive</div>
+    <div class="rule"></div>
+  </header>
+
+  <section class="panel controls">
+    <div class="searchrow">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="#c7a349" stroke-width="1.6"/><path d="M10.5 10.5 L15 15" stroke="#c7a349" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="q" type="search" placeholder="Tìm runeword, rune hoặc loại phôi…" aria-label="Tìm runeword, rune hoặc loại phôi" autocomplete="off" />
+      </div>
+      <button class="btn" id="todoOnly" type="button" aria-pressed="false">Chỉ hiện chưa làm</button>
+      <button class="btn" id="reset" type="button">Xoá tiến độ</button>
+    </div>
+
+    <div class="chips" id="chips" role="group" aria-label="Lọc theo nhóm trang bị"></div>
+
+    <div class="statusbar">
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Tiến độ hoàn thành" id="bar"><i id="fill"></i></div>
+      <div class="count" id="count">—</div>
+    </div>
+  </section>
+
+  <main id="out" aria-live="polite"></main>
+
+  <footer>Tiến độ được lưu ngay trên máy bạn (localStorage) — đóng tab vẫn còn.</footer>
+</div>
+
+<script>
+const DATA = [{"name": "Ancient's Pledge", "sockets": 3, "base": "Khiên", "runes": "Ral (8) - Ort (9) - Tal (7)"}, {"name": "Beast", "sockets": 5, "base": "Rìu, Trượng (Scepter), Búa", "runes": "Ber (30) - Tir (3) - Um (22) - Mal (23) - Lum (17)"}, {"name": "Black", "sockets": 3, "base": "Chùy (Club/Mace), Búa", "runes": "Thul (10) - Io (16) - Nef (4)"}, {"name": "Bone", "sockets": 3, "base": "Áo giáp", "runes": "Sol (12) - Um (22) - Um (22)"}, {"name": "Bramble", "sockets": 4, "base": "Áo giáp", "runes": "Ral (8) - Ohm (27) - Sur (29) - Eth (5)"}, {"name": "Brand", "sockets": 4, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Jah (31) - Lo (28) - Mal (23) - Gul (25)"}, {"name": "Breath of the Dying", "sockets": 6, "base": "Vũ khí", "runes": "Vex (26) - Hel (15) - El (1) - Eld (2) - Zod (33) - Eth (5)"}, {"name": "Bulwark", "sockets": 3, "base": "Nón", "runes": "Shael (13) - Io (16) - Sol (12)"}, {"name": "Call to Arms", "sockets": 5, "base": "Vũ khí", "runes": "Amn (11) - Ral (8) - Mal (23) - Ist (24) - Ohm (27)"}, {"name": "Chains of Honor", "sockets": 4, "base": "Áo giáp", "runes": "Dol (14) - Um (22) - Ber (30) - Ist (24)"}, {"name": "Chaos", "sockets": 3, "base": "Móng vuốt (Claw)", "runes": "Fal (19) - Ohm (27) - Um (22)"}, {"name": "Crescent Moon", "sockets": 3, "base": "Rìu, Kiếm, Vũ khí cán dài", "runes": "Shael (13) - Um (22) - Tir (3)"}, {"name": "Cure", "sockets": 3, "base": "Nón", "runes": "Shael (13) - Io (16) - Tal (7)"}, {"name": "Death", "sockets": 5, "base": "Kiếm, Rìu", "runes": "Hel (15) - El (1) - Vex (26) - Ort (9) - Gul (25)"}, {"name": "Delirium", "sockets": 3, "base": "Nón", "runes": "Lem (20) - Ist (24) - Io (16)"}, {"name": "Destruction", "sockets": 5, "base": "Vũ khí cán dài, Kiếm", "runes": "Vex (26) - Lo (28) - Ber (30) - Jah (31) - Ko (18)"}, {"name": "Doom", "sockets": 5, "base": "Rìu, Vũ khí cán dài, Búa", "runes": "Hel (15) - Ohm (27) - Um (22) - Lo (28) - Cham (32)"}, {"name": "Dragon", "sockets": 3, "base": "Áo giáp, Khiên", "runes": "Sur (29) - Lo (28) - Sol (12)"}, {"name": "Dream", "sockets": 3, "base": "Nón, Khiên", "runes": "Io (16) - Jah (31) - Pul (21)"}, {"name": "Duress", "sockets": 3, "base": "Áo giáp", "runes": "Shael (13) - Um (22) - Thul (10)"}, {"name": "Edge", "sockets": 3, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Tir (3) - Tal (7) - Amn (11)"}, {"name": "Enigma", "sockets": 3, "base": "Áo giáp", "runes": "Jah (31) - Ith (6) - Ber (30)"}, {"name": "Enlightenment", "sockets": 3, "base": "Áo giáp", "runes": "Pul (21) - Ral (8) - Sol (12)"}, {"name": "Eternity", "sockets": 5, "base": "Vũ khí cận chiến", "runes": "Amn (11) - Ber (30) - Ist (24) - Sol (12) - Sur (29)"}, {"name": "Exile", "sockets": 4, "base": "Khiên Paladin", "runes": "Vex (26) - Ohm (27) - Ist (24) - Dol (14)"}, {"name": "Famine", "sockets": 4, "base": "Rìu, Búa, Chùy", "runes": "Fal (19) - Ohm (27) - Ort (9) - Jah (31)"}, {"name": "Flickering Flame", "sockets": 3, "base": "Nón", "runes": "Nef (4) - Pul (21) - Vex (26)"}, {"name": "Fortitude", "sockets": 4, "base": "Vũ khí, Áo giáp", "runes": "El (1) - Sol (12) - Dol (14) - Lo (28)"}, {"name": "Fury", "sockets": 3, "base": "Vũ khí cận chiến", "runes": "Jah (31) - Gul (25) - Eth (5)"}, {"name": "Gloom", "sockets": 3, "base": "Áo giáp", "runes": "Fal (19) - Um (22) - Pul (21)"}, {"name": "Grief", "sockets": 5, "base": "Kiếm, Rìu", "runes": "Eth (5) - Tir (3) - Lo (28) - Mal (23) - Ral (8)"}, {"name": "Ground", "sockets": 3, "base": "Nón", "runes": "Shael (13) - Io (16) - Ort (9)"}, {"name": "Hand of Justice", "sockets": 4, "base": "Vũ khí", "runes": "Sur (29) - Cham (32) - Amn (11) - Lo (28)"}, {"name": "Harmony", "sockets": 4, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Tir (3) - Ith (6) - Sol (12) - Ko (18)"}, {"name": "Hearth", "sockets": 3, "base": "Nón", "runes": "Shael (13) - Io (16) - Thul (10)"}, {"name": "Heart of the Oak", "sockets": 4, "base": "Gậy, Chùy", "runes": "Ko (18) - Vex (26) - Pul (21) - Thul (10)"}, {"name": "Holy Thunder", "sockets": 4, "base": "Trượng (Scepter)", "runes": "Eth (5) - Ral (8) - Ort (9) - Tal (7)"}, {"name": "Honor", "sockets": 5, "base": "Vũ khí cận chiến", "runes": "Amn (11) - El (1) - Ith (6) - Tir (3) - Sol (12)"}, {"name": "Hustle", "sockets": 3, "base": "Vũ khí, Áo giáp", "runes": "Shael (13) - Ko (18) - Eld (2)"}, {"name": "Ice", "sockets": 4, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Amn (11) - Shael (13) - Jah (31) - Lo (28)"}, {"name": "Infinity", "sockets": 4, "base": "Vũ khí cán dài, Giáo, Giáo Amazon", "runes": "Ber (30) - Mal (23) - Ber (30) - Ist (24)"}, {"name": "Insight", "sockets": 4, "base": "Vũ khí cán dài, Gậy, Cung, Nỏ", "runes": "Ral (8) - Tir (3) - Tal (7) - Sol (12)"}, {"name": "King's Grace", "sockets": 3, "base": "Kiếm, Trượng (Scepter)", "runes": "Amn (11) - Ral (8) - Thul (10)"}, {"name": "Kingslayer", "sockets": 4, "base": "Kiếm, Rìu", "runes": "Mal (23) - Um (22) - Gul (25) - Fal (19)"}, {"name": "Last Wish", "sockets": 6, "base": "Kiếm, Búa, Rìu", "runes": "Jah (31) - Mal (23) - Jah (31) - Sur (29) - Jah (31) - Ber (30)"}, {"name": "Lawbringer", "sockets": 3, "base": "Kiếm, Búa, Trượng (Scepter)", "runes": "Amn (11) - Lem (20) - Ko (18)"}, {"name": "Leaf", "sockets": 2, "base": "Gậy", "runes": "Tir (3) - Ral (8)"}, {"name": "Lionheart", "sockets": 3, "base": "Áo giáp", "runes": "Hel (15) - Lum (17) - Fal (19)"}, {"name": "Lore", "sockets": 2, "base": "Nón", "runes": "Ort (9) - Sol (12)"}, {"name": "Malice", "sockets": 3, "base": "Vũ khí cận chiến", "runes": "Ith (6) - El (1) - Eth (5)"}, {"name": "Melody", "sockets": 3, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Shael (13) - Ko (18) - Nef (4)"}, {"name": "Memory", "sockets": 4, "base": "Gậy", "runes": "Lum (17) - Io (16) - Sol (12) - Eth (5)"}, {"name": "Metamorphosis", "sockets": 3, "base": "Nón", "runes": "Io (16) - Cham (32) - Fal (19)"}, {"name": "Mist", "sockets": 5, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Cham (32) - Shael (13) - Gul (25) - Thul (10) - Ith (6)"}, {"name": "Mosaic", "sockets": 3, "base": "Móng vuốt (Claw)", "runes": "Mal (23) - Gul (25) - Amn (11)"}, {"name": "Myth", "sockets": 3, "base": "Áo giáp", "runes": "Hel (15) - Amn (11) - Nef (4)"}, {"name": "Nadir", "sockets": 2, "base": "Nón", "runes": "Nef (4) - Tir (3)"}, {"name": "Oath", "sockets": 4, "base": "Kiếm, Rìu, Chùy", "runes": "Shael (13) - Pul (21) - Mal (23) - Lum (17)"}, {"name": "Obedience", "sockets": 5, "base": "Vũ khí cán dài, Giáo", "runes": "Hel (15) - Ko (18) - Thul (10) - Eth (5) - Fal (19)"}, {"name": "Obsession", "sockets": 6, "base": "Gậy", "runes": "Zod (33) - Ist (24) - Lem (20) - Lum (17) - Io (16) - Nef (4)"}, {"name": "Passion", "sockets": 4, "base": "Vũ khí", "runes": "Dol (14) - Ort (9) - Eld (2) - Lem (20)"}, {"name": "Pattern", "sockets": 3, "base": "Móng vuốt (Claw)", "runes": "Tal (7) - Ort (9) - Tir (3)"}, {"name": "Peace", "sockets": 3, "base": "Áo giáp", "runes": "Shael (13) - Thul (10) - Amn (11)"}, {"name": "Phoenix", "sockets": 4, "base": "Vũ khí, Khiên", "runes": "Vex (26) - Vex (26) - Lo (28) - Jah (31)"}, {"name": "Plague", "sockets": 3, "base": "Kiếm, Móng vuốt, Dao găm", "runes": "Cham (32) - Shael (13) - Um (22)"}, {"name": "Pride", "sockets": 4, "base": "Vũ khí cán dài, Giáo", "runes": "Cham (32) - Sur (29) - Io (16) - Lo (28)"}, {"name": "Principle", "sockets": 3, "base": "Áo giáp", "runes": "Ral (8) - Gul (25) - Eld (2)"}, {"name": "Prudence", "sockets": 2, "base": "Áo giáp", "runes": "Mal (23) - Tir (3)"}, {"name": "Radiance", "sockets": 3, "base": "Nón", "runes": "Nef (4) - Sol (12) - Ith (6)"}, {"name": "Rain", "sockets": 3, "base": "Áo giáp", "runes": "Ort (9) - Mal (23) - Ith (6)"}, {"name": "Rhyme", "sockets": 2, "base": "Khiên", "runes": "Shael (13) - Eth (5)"}, {"name": "Rift", "sockets": 4, "base": "Vũ khí cán dài, Trượng (Scepter)", "runes": "Hel (15) - Ko (18) - Lem (20) - Gul (25)"}, {"name": "Sanctuary", "sockets": 3, "base": "Khiên", "runes": "Ko (18) - Ko (18) - Mal (23)"}, {"name": "Silence", "sockets": 6, "base": "Vũ khí", "runes": "Dol (14) - Eld (2) - Hel (15) - Ist (24) - Tir (3) - Vex (26)"}, {"name": "Smoke", "sockets": 2, "base": "Áo giáp", "runes": "Nef (4) - Lum (17)"}, {"name": "Spirit", "sockets": 4, "base": "Kiếm, Khiên", "runes": "Tal (7) - Thul (10) - Ort (9) - Amn (11)"}, {"name": "Splendor", "sockets": 2, "base": "Khiên", "runes": "Eth (5) - Lum (17)"}, {"name": "Stealth", "sockets": 2, "base": "Áo giáp", "runes": "Tal (7) - Eth (5)"}, {"name": "Steel", "sockets": 2, "base": "Kiếm, Rìu, Chùy", "runes": "Tir (3) - El (1)"}, {"name": "Stone", "sockets": 4, "base": "Áo giáp", "runes": "Shael (13) - Um (22) - Pul (21) - Lum (17)"}, {"name": "Strength", "sockets": 2, "base": "Vũ khí cận chiến", "runes": "Amn (11) - Tir (3)"}, {"name": "Temper", "sockets": 3, "base": "Nón", "runes": "Shael (13) - Io (16) - Ral (8)"}, {"name": "Treachery", "sockets": 3, "base": "Áo giáp", "runes": "Shael (13) - Thul (10) - Lem (20)"}, {"name": "Unbending Will", "sockets": 6, "base": "Kiếm", "runes": "Fal (19) - Io (16) - Ith (6) - Eld (2) - El (1) - Hel (15)"}, {"name": "Venom", "sockets": 3, "base": "Vũ khí", "runes": "Tal (7) - Dol (14) - Mal (23)"}, {"name": "Voice of Reason", "sockets": 4, "base": "Kiếm, Chùy", "runes": "Lem (20) - Ko (18) - El (1) - Eld (2)"}, {"name": "Wealth", "sockets": 3, "base": "Áo giáp", "runes": "Lem (20) - Ko (18) - Tir (3)"}, {"name": "White", "sockets": 2, "base": "Đũa phép (Wand)", "runes": "Dol (14) - Io (16)"}, {"name": "Wind", "sockets": 2, "base": "Vũ khí cận chiến", "runes": "Sur (29) - El (1)"}, {"name": "Wisdom", "sockets": 3, "base": "Nón", "runes": "Pul (21) - Ith (6) - Eld (2)"}, {"name": "Wrath", "sockets": 4, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Pul (21) - Lum (17) - Ber (30) - Mal (23)"}, {"name": "Zephyr", "sockets": 2, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Ort (9) - Eth (5)"}, {"name": "Authority", "sockets": 3, "base": "Áo giáp", "runes": "Hel (15) - Shael (13) - Ral (8)"}, {"name": "Coven", "sockets": 3, "base": "Nón", "runes": "Ist (24) - Ral (8) - Io (16)"}, {"name": "Ritual", "sockets": 3, "base": "Dao găm (Daggers)", "runes": "Amn (11) - Shael (13) - Ohm (27)"}, {"name": "Vigilance", "sockets": 2, "base": "Grimoire, Khiên thường, Khiên Paladin, Đầu lâu (Voodoo Heads)", "runes": "Dol (14) - Gul (25)"}, {"name": "Void", "sockets": 3, "base": "Dao găm (Daggers)", "runes": "Thul (10) - Zod (33) - Ist (24)"}, {"name": "Faith", "sockets": 4, "base": "Vũ khí tầm xa (Cung/Nỏ)", "runes": "Ohm (27) - Jah (31) - Lem (20) - Eld (2)"}];
+const KEY = "d2r-runeword-checklist-v1";
+
+const GROUPS = [
+  { id: "all", label: "Tất cả", test: () => true },
+  { id: "weapon", label: "Vũ khí", test: b => /vũ khí|kiếm|rìu|búa|chùy|gậy|trượng|dao găm|móng vuốt|giáo|cán dài|đũa phép|cung|nỏ/i.test(b) },
+  { id: "armor", label: "Áo giáp", test: b => /áo giáp/i.test(b) },
+  { id: "helm", label: "Nón", test: b => /nón/i.test(b) },
+  { id: "shield", label: "Khiên", test: b => /khiên|đầu lâu|grimoire/i.test(b) },
+  { id: "bow", label: "Cung / Nỏ", test: b => /cung|nỏ/i.test(b) },
+];
+
+let state = { q: "", group: "all", todoOnly: false };
+let done = load();
+
+function load() {
+  try { return new Set(JSON.parse(localStorage.getItem(KEY) || "[]")); }
+  catch (e) { return new Set(); }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify([...done])); } catch (e) {}
+}
+
+const norm = s => (s || "").toLowerCase()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
+const esc = s => (s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function mark(text, q) {
+  const safe = esc(text);
+  if (!q) return safe;
+  const nt = norm(text), nq = norm(q);
+  const i = nt.indexOf(nq);
+  if (i < 0 || nt.length !== text.length) return safe;
+  return esc(text.slice(0, i)) + '<span class="hi">' + esc(text.slice(i, i + q.length)) + "</span>" + esc(text.slice(i + q.length));
+}
+
+function runeHtml(runes, q) {
+  return runes.split(" - ").map(r => mark(r, q)).join('<span class="sep">◆</span>');
+}
+
+function matches(rw) {
+  const g = GROUPS.find(x => x.id === state.group);
+  if (g && !g.test(rw.base)) return false;
+  if (state.todoOnly && done.has(rw.name)) return false;
+  const q = norm(state.q).trim();
+  if (!q) return true;
+  return norm(rw.name + " " + rw.base + " " + rw.runes + " " + rw.sockets).includes(q);
+}
+
+function render() {
+  const list = DATA.filter(matches).sort((a, b) => a.name.localeCompare(b.name));
+  const out = document.getElementById("out");
+
+  const total = DATA.length, doneCount = DATA.filter(r => done.has(r.name)).length;
+  const pct = total ? Math.round((doneCount / total) * 100) : 0;
+  document.getElementById("fill").style.width = pct + "%";
+  document.getElementById("bar").setAttribute("aria-valuenow", String(pct));
+  document.getElementById("count").innerHTML =
+    "<b>" + doneCount + "</b> / " + total + " runeword đã làm · <b>" + pct + "%</b> · đang hiện <b>" + list.length + "</b>";
+
+  if (!list.length) {
+    out.innerHTML = '<div class="panel empty">Không tìm thấy runeword nào khớp. Thử từ khoá khác nha.</div>';
+    return;
+  }
+
+  const bySock = new Map();
+  for (const rw of list) {
+    if (!bySock.has(rw.sockets)) bySock.set(rw.sockets, []);
+    bySock.get(rw.sockets).push(rw);
+  }
+
+  let html = "";
+  for (const sock of [...bySock.keys()].sort((a, b) => a - b)) {
+    html += '<h2 class="group-title">' + sock + " socket · " + bySock.get(sock).length + " runeword</h2><ul class=\"list\">";
+    for (const rw of bySock.get(sock)) {
+      const isDone = done.has(rw.name);
+      html += '<li class="row' + (isDone ? " done" : "") + '">' +
+        '<label class="box"><input type="checkbox" data-name="' + esc(rw.name) + '"' + (isDone ? " checked" : "") +
+        ' aria-label="Đánh dấu ' + esc(rw.name) + '" /></label>' +
+        '<div class="body">' +
+          '<div class="name">' + mark(rw.name, state.q) + "</div>" +
+          '<div class="meta"><span class="sock">' + rw.sockets + " socket</span> · " + mark(rw.base, state.q) + "</div>" +
+          '<div class="runes">' + runeHtml(rw.runes, state.q) + "</div>" +
+        "</div></li>";
+    }
+    html += "</ul>";
+  }
+  out.innerHTML = html;
+}
+
+const chips = document.getElementById("chips");
+chips.innerHTML = GROUPS.map(g =>
+  '<button class="chip" type="button" data-g="' + g.id + '" aria-pressed="' + (g.id === "all") + '">' + g.label + "</button>"
+).join("");
+chips.addEventListener("click", e => {
+  const b = e.target.closest(".chip");
+  if (!b) return;
+  state.group = b.dataset.g;
+  chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
+  render();
+});
+
+document.getElementById("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+
+const todoBtn = document.getElementById("todoOnly");
+todoBtn.addEventListener("click", () => {
+  state.todoOnly = !state.todoOnly;
+  todoBtn.setAttribute("aria-pressed", String(state.todoOnly));
+  render();
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  if (!done.size || confirm("Xoá toàn bộ tiến độ checklist?")) { done = new Set(); save(); render(); }
+});
+
+document.getElementById("out").addEventListener("change", e => {
+  const cb = e.target;
+  if (cb.type !== "checkbox") return;
+  if (cb.checked) done.add(cb.dataset.name); else done.delete(cb.dataset.name);
+  save();
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
