@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - build/kvhao-autopotion-infernal-rotw
+      - build/kvhao-autopotion-v8-viet-hoa
     paths:
       - autopotion-build/**
       - .github/workflows/kvhao-autopotion-exe.yml
@@ -42,6 +43,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Patch failed due to incompatible source" }
           python -m compileall -q upstream
           if ($LASTEXITCODE -ne 0) { throw "Syntax validation failed" }
+      - name: Localize UI safely (Vietnamese, display-only)
+        run: |
+          python autopotion-build/localize_source.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "Vietnamese UI transformation failed" }
+          python -m compileall -q upstream/ui
+          if ($LASTEXITCODE -ne 0) { throw "Vietnamese UI syntax check failed" }
       - name: Smoke test full GUI startup (without game)
         run: |
           python autopotion-build/smoke_gui.py upstream
@@ -89,14 +96,14 @@ jobs:
           Start D2R via D2RLoader, then launch the EXE separately. It attaches to D2R.exe.
           First verify health/mana/belt memory reads in Diagnostics, then enable.
           Automated gameplay may lead to sanctions on Battle.net Online.
-          Interface: original English for stability. Compatibility packaging and branding: KVHao.
+          Interface: Vietnamese UI text with original internal game logic. Localization and packaging: KVHao.
           Original author: DavidPinto; MIT license retained.
           '@ | Set-Content -Path release/README.txt -Encoding utf8
-          Compress-Archive release/* KVHao_AutoPotion_Infernal_RotW_EXE_Windows.zip -Force
+          Compress-Archive release/* KVHao_AutoPotion_v8_VietHoa_Infernal_RotW_EXE.zip -Force
       - name: Upload EXE release
         uses: actions/upload-artifact@v4
         with:
-          name: KVHao_AutoPotion_Infernal_RotW_EXE
-          path: KVHao_AutoPotion_Infernal_RotW_EXE_Windows.zip
+          name: KVHao_AutoPotion_v8_VietHoa_Infernal_RotW_EXE
+          path: KVHao_AutoPotion_v8_VietHoa_Infernal_RotW_EXE.zip
           if-no-files-found: error
           retention-days: 30
