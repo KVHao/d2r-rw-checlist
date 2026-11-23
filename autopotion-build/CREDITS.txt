@@ -1,7 +1,8 @@
 KVHao AutoPotion - Infernal / RotW compatible edition
 
 Compatibility packaging and app branding: KVHao
-Original AutoPotion code and English user interface: DavidPinto
+Original AutoPotion core, internal logic and original interface: DavidPinto
+Vietnamese on-screen labels and helper text: KVHao
 Original repository: https://github.com/DavidPinto/D2R-Infernal-AutoPotion
 Original copyright and MIT license retained in LICENSE_DavidPinto.txt.
 
