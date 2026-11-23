@@ -21,7 +21,8 @@ KW_WIDGETS = {"CTkLabel", "CTkButton", "CTkCheckBox",
 HELPERS = {"attach_tooltip", "heading", "hint", "labeled_slider", "stat_bar"}
 
 def localize(path):
-    src = path.read_bytes()
+    # Windows git checkouts may use CRLF; normalize before AST byte offsets.
+    src = path.read_bytes().replace(b"\r\n", b"\n")
     tree = ast.parse(src, filename=str(path))
     line_offsets = [0]
     for line in src.splitlines(keepends=True):
