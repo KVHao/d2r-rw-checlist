@@ -1,0 +1,83 @@
+name: Build KVHao AutoPotion Infernal RotW EXE
+on:
+  push:
+    branches:
+      - build/kvhao-autopotion-infernal-rotw
+    paths:
+      - autopotion-build/**
+      - .github/workflows/kvhao-autopotion-exe.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-exe:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout KVHao patch
+        uses: actions/checkout@v4
+      - name: Setup Python 3.11 (Windows x64)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: x64
+      - name: Fetch original AutoPotion
+        run: |
+          git clone --depth 1 https://github.com/DavidPinto/D2R-Infernal-AutoPotion.git upstream
+          if ($LASTEXITCODE -ne 0) { throw "Unable to download original AutoPotion" }
+      - name: Install build dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --upgrade pip
+          if ($LASTEXITCODE -ne 0) { throw "pip upgrade failed" }
+          python -m pip install --disable-pip-version-check -r upstream/requirements.txt "pyinstaller>=6,<7"
+          if ($LASTEXITCODE -ne 0) { throw "Dependency installation failed" }
+      - name: Apply KVHao Vietnamese and safety patch
+        run: |
+          python autopotion-build/patch.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "Patch failed due to incompatible source" }
+          python -m compileall -q upstream
+          if ($LASTEXITCODE -ne 0) { throw "Syntax validation failed" }
+      - name: Build Windows EXE (Infernal/RotW)
+        run: |
+          Push-Location upstream
+          try {
+            python -m PyInstaller --noconfirm --clean --onefile --windowed --name KVHao_AutoPotion --collect-all customtkinter --hidden-import ui.kvhao_locale main.py
+            if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
+          } finally {
+            Pop-Location
+          }
+      - name: Verify Windows PE executable
+        run: |
+          $path = "upstream/dist/KVHao_AutoPotion.exe"
+          if (!(Test-Path $path)) { throw "EXE file missing" }
+          $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $path))
+          if ($bytes.Length -lt 100000 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) { throw "Invalid EXE" }
+          Write-Host "Verified PE EXE: $($bytes.Length) bytes"
+      - name: Create distribution ZIP
+        run: |
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item upstream/dist/KVHao_AutoPotion.exe release/
+          Copy-Item upstream/LICENSE release/LICENSE_DavidPinto.txt
+          Copy-Item autopotion-build/CREDITS.txt release/CREDITS.txt
+          @'
+          KVHao AutoPotion - Infernal/RotW
+          Start KVHao_AutoPotion.exe directly. No Python required.
+          IMPORTANT: This tool is an external companion, NOT a D2RLoader DLL.
+          First verify health/mana/belt memory reads in Diagnostics, then enable.
+          Automated gameplay may lead to sanctions on Battle.net Online.
+          Vietnamese localization / modifications: KVHao.
+          Original author: DavidPinto; MIT license retained.
+          '@ | Set-Content -Path release/README.txt -Encoding utf8
+          Compress-Archive release/* KVHao_AutoPotion_Infernal_RotW_EXE_Windows.zip -Force
+      - name: Upload EXE release
+        uses: actions/upload-artifact@v4
+        with:
+          name: KVHao_AutoPotion_Infernal_RotW_EXE
+          path: KVHao_AutoPotion_Infernal_RotW_EXE_Windows.zip
+          if-no-files-found: error
+          retention-days: 30
