@@ -1,0 +1,6 @@
+KVHao AutoPotion — Vietnamese Edition
+
+Vietnamese localization and modifications: KVHao
+Original AutoPotion source: DavidPinto
+Repository: https://github.com/DavidPinto/D2R-Infernal-AutoPotion
+License: MIT (original copyright retained in LICENSE_DavidPinto.txt).
