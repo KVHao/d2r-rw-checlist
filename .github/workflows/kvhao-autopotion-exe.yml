@@ -36,17 +36,21 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "pip upgrade failed" }
           python -m pip install --disable-pip-version-check -r upstream/requirements.txt "pyinstaller>=6,<7"
           if ($LASTEXITCODE -ne 0) { throw "Dependency installation failed" }
-      - name: Apply KVHao Vietnamese and safety patch
+      - name: Apply compatibility patch without UI monkey-patching
         run: |
           python autopotion-build/patch.py upstream
           if ($LASTEXITCODE -ne 0) { throw "Patch failed due to incompatible source" }
           python -m compileall -q upstream
           if ($LASTEXITCODE -ne 0) { throw "Syntax validation failed" }
+      - name: Smoke test full GUI startup (without game)
+        run: |
+          python autopotion-build/smoke_gui.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "GUI failed to start, aborting EXE build" }
       - name: Build Windows EXE (Infernal/RotW)
         run: |
           Push-Location upstream
           try {
-            python -m PyInstaller --noconfirm --clean --onefile --windowed --name KVHao_AutoPotion --collect-all customtkinter --hidden-import ui.kvhao_locale main.py
+            python -m PyInstaller --noconfirm --clean --onefile --windowed --name KVHao_AutoPotion --collect-all customtkinter main.py
             if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
           } finally {
             Pop-Location
@@ -58,6 +62,20 @@ jobs:
           $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $path))
           if ($bytes.Length -lt 100000 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) { throw "Invalid EXE" }
           Write-Host "Verified PE EXE: $($bytes.Length) bytes"
+      - name: Smoke test packaged EXE startup
+        run: |
+          $exe = (Resolve-Path upstream/dist/KVHao_AutoPotion.exe).Path
+          $process = Start-Process -FilePath $exe -PassThru
+          try {
+            Start-Sleep -Seconds 8
+            $process.Refresh()
+            if ($process.HasExited) {
+              throw "The packaged EXE exited during GUI startup. ExitCode=$($process.ExitCode)"
+            }
+            Write-Host "EXE_STARTUP_OK: application process remains running"
+          } finally {
+            if (!$process.HasExited) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue }
+          }
       - name: Create distribution ZIP
         run: |
           New-Item -ItemType Directory -Force release | Out-Null
@@ -68,9 +86,10 @@ jobs:
           KVHao AutoPotion - Infernal/RotW
           Start KVHao_AutoPotion.exe directly. No Python required.
           IMPORTANT: This tool is an external companion, NOT a D2RLoader DLL.
+          Start D2R via D2RLoader, then launch the EXE separately. It attaches to D2R.exe.
           First verify health/mana/belt memory reads in Diagnostics, then enable.
           Automated gameplay may lead to sanctions on Battle.net Online.
-          Vietnamese localization / modifications: KVHao.
+          Interface: original English for stability. Compatibility packaging and branding: KVHao.
           Original author: DavidPinto; MIT license retained.
           '@ | Set-Content -Path release/README.txt -Encoding utf8
           Compress-Archive release/* KVHao_AutoPotion_Infernal_RotW_EXE_Windows.zip -Force
