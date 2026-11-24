@@ -5,6 +5,7 @@ on:
       - build/kvhao-autopotion-infernal-rotw
       - build/kvhao-autopotion-v8-viet-hoa
       - build/kvhao-autopotion-v9-loader-diagnostics
+      - build/kvhao-autopotion-v10-loader-process
     paths:
       - autopotion-build/**
       - .github/workflows/kvhao-autopotion-exe.yml
@@ -50,6 +51,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "D2RLoader diagnostics patch failed" }
           python -m compileall -q upstream/ui upstream/d2r
           if ($LASTEXITCODE -ne 0) { throw "D2RLoader compatibility syntax check failed" }
+      - name: Accept D2RLoader as native game process
+        run: |
+          python autopotion-build/loader_game_process.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "Game process compatibility patch failed" }
+          python -m compileall -q upstream/ui upstream/d2r
+          if ($LASTEXITCODE -ne 0) { throw "Game process compatibility syntax check failed" }
+          python autopotion-build/test_game_process.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "Game process recognition test failed" }
       - name: Localize UI safely (Vietnamese, display-only)
         run: |
           python autopotion-build/localize_source.py upstream
@@ -100,19 +109,19 @@ jobs:
           KVHao AutoPotion - Infernal/RotW
           Start KVHao_AutoPotion.exe directly. No Python required.
           IMPORTANT: This tool is an external companion, NOT a D2RLoader DLL.
-          Start D2R via D2RLoader, then launch the EXE separately. It attaches to D2R.exe.
+          Start D2R via D2RLoader, then launch the EXE separately. It can attach to D2R.exe or D2RLoader.exe as the real game process.
           If not connected, use the Diagnostics tab's "Kiem tra D2RLoader" button.
-          If the game is found but offsets remain unresolved, export the Diagnostics report.
+          If the game is found but offsets remain unresolved, export the Diagnostics report. Recognition is not proof that offsets are valid.
           First verify health/mana/belt memory reads in Diagnostics, then enable.
           Automated gameplay may lead to sanctions on Battle.net Online.
           Interface: Vietnamese UI text with original internal game logic. Localization and packaging: KVHao.
           Original author: DavidPinto; MIT license retained.
           '@ | Set-Content -Path release/README.txt -Encoding utf8
-          Compress-Archive release/* KVHao_AutoPotion_v9_D2RLoader_Diagnostics_EXE.zip -Force
+          Compress-Archive release/* KVHao_AutoPotion_v10_D2RLoader_GameProcess_EXE.zip -Force
       - name: Upload EXE release
         uses: actions/upload-artifact@v4
         with:
-          name: KVHao_AutoPotion_v9_D2RLoader_Diagnostics_EXE
-          path: KVHao_AutoPotion_v9_D2RLoader_Diagnostics_EXE.zip
+          name: KVHao_AutoPotion_v10_D2RLoader_GameProcess_EXE
+          path: KVHao_AutoPotion_v10_D2RLoader_GameProcess_EXE.zip
           if-no-files-found: error
           retention-days: 30
