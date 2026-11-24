@@ -90,25 +90,25 @@ r=change(r,
     "full path player validation")
 r=change(r,
     '''            p = self._read_player(unit)
-            stats = p["stats"]
-            life = stats.get(m.STAT["Life"], 0)''',
+        stats = p["stats"]
+        life = stats.get(m.STAT["Life"], 0)''',
     '''            p = self._read_player(unit)
-            stats = p["stats"]
-            lines.append("")
-            lines.append("=== KVHao v13 raw player data (for offset diagnosis) ===")
-            slex = self.proc.read_ptr(unit + m.UNIT_OFFSET_STATSLISTEX)
-            unit_data = self.proc.read_ptr(unit + m.UNIT_OFFSET_UNIT_DATA)
-            lines.append(f"  unit addr   : 0x{unit:X}")
-            lines.append(f"  unit type   : {self.proc.read_u32(unit)}")
-            lines.append(f"  class raw   : {self.proc.read_u32(unit + m.UNIT_OFFSET_TXTFILE)}")
-            lines.append(f"  data ptr    : 0x{unit_data:X}")
-            lines.append(f"  statlist ptr: 0x{slex:X}")
-            lines.append(f"  stat ptr    : 0x{self.proc.read_ptr(slex + m.STATSLIST_STAT_PTR):X}" if slex else "  stat ptr    : 0")
-            lines.append(f"  stat count  : {self.proc.read_ptr(slex + m.STATSLIST_STAT_COUNT)}" if slex else "  stat count  : 0")
-            lines.append(f"  stat IDs    : {sorted(stats.keys())[:32]}")
-            lines.append(f"  valid char  : {self._kvhao_player_plausible(p)}")
-            lines.append("  NOTE: address/module match alone is not character validation.")
-            life = stats.get(m.STAT["Life"], 0)''',
+        stats = p["stats"]
+        lines.append("")
+        lines.append("=== KVHao v13 raw player data (for offset diagnosis) ===")
+        slex = self.proc.read_ptr(unit + m.UNIT_OFFSET_STATSLISTEX)
+        unit_data = self.proc.read_ptr(unit + m.UNIT_OFFSET_UNIT_DATA)
+        lines.append(f"  unit addr   : 0x{unit:X}")
+        lines.append(f"  unit type   : {self.proc.read_u32(unit)}")
+        lines.append(f"  class raw   : {self.proc.read_u32(unit + m.UNIT_OFFSET_TXTFILE)}")
+        lines.append(f"  data ptr    : 0x{unit_data:X}")
+        lines.append(f"  statlist ptr: 0x{slex:X}")
+        lines.append(f"  stat ptr    : 0x{self.proc.read_ptr(slex + m.STATSLIST_STAT_PTR):X}" if slex else "  stat ptr    : 0")
+        lines.append(f"  stat count  : {self.proc.read_ptr(slex + m.STATSLIST_STAT_COUNT)}" if slex else "  stat count  : 0")
+        lines.append(f"  stat IDs    : {sorted(stats.keys())[:32]}")
+        lines.append(f"  valid char  : {self._kvhao_player_plausible(p)}")
+        lines.append("  NOTE: address/module match alone is not character validation.")
+        life = stats.get(m.STAT["Life"], 0)''',
     "raw stat structure diagnostics")
 reader.write_text(r,encoding="utf-8")
 
