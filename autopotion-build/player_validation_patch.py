@@ -160,7 +160,7 @@ a=change(a,
 a=change(a,
     '    def _run_scan(self):',
     '''    def _kvhao_copy_diagnostics(self):
-        """Copy diagnostic report for troubleshooting the actual game build.""\""
+        """Copy diagnostic report for troubleshooting the actual game build."""
         text = self.diag_box.get("1.0", "end").strip()
         if not text:
             self.diag_hint.configure(
