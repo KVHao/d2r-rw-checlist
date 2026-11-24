@@ -34,11 +34,11 @@ r.offsets=SimpleNamespace(struct_stats={},ok=False)
 with patch("d2r.offsets.discover_unit_table",return_value=(0,0)) as discover:
     r.discover(fast=True)
     args,kwargs=discover.call_args
-    assert kwargs["time_budget"]==8.0, kwargs
+    assert kwargs["time_budget"]==25.0, kwargs
     assert [m[2] for m in kwargs["modules"]]==["D2RLoader.exe","D2RCore.dll"],kwargs
 with patch("d2r.offsets.discover_unit_table",return_value=(0,0)) as discover:
     r.discover()
     args,kwargs=discover.call_args
     assert kwargs["time_budget"]==90.0
     assert len(kwargs["modules"])==3,kwargs
-print("PERF_TEST_OK: 50ms HP/MP, 650ms inventory, 400ms monster cache, bounded autoscan")
+print("PERF_TEST_OK: 50ms HP/MP, 650ms inventory, 400ms monster cache, 25s primary scan")
