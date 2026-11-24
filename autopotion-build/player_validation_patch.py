@@ -192,14 +192,14 @@ a=change(a,
                     if snap.error and snap.error not in self._shown_errors:''',
     "status requires character validation")
 a=change(a,
-    '''        if off:
-            self._set_status("Connected", GOOD)
-            self.on_event(m.GameEvent(kind="info",
-                          message=f"Resolved UnitTable offset structurally at 0x{off:X}."))''',
-    '''        if off:
-            self._set_status("Đang xác minh dữ liệu nhân vật", WARN)
-            self.on_event(m.GameEvent(kind="info",
-                          message=f"Found potential UnitTable at 0x{off:X}; validating character."))''',
+    '''            if off:
+                self._set_status("Connected", GOOD)
+                self.on_event(m.GameEvent(kind="info",
+                              message=f"Resolved UnitTable offset structurally at 0x{off:X}."))''',
+    '''            if off:
+                self._set_status("Đang xác minh dữ liệu nhân vật", WARN)
+                self.on_event(m.GameEvent(kind="info",
+                              message=f"Found potential UnitTable at 0x{off:X}; validating character."))''',
     "do not mark unverified UnitTable green")
 a=change(a,
     '''        if found:
