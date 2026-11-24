@@ -191,5 +191,27 @@ a=change(a,
                         self._set_status(*status)
                     if snap.error and snap.error not in self._shown_errors:''',
     "status requires character validation")
+a=change(a,
+    '''        if off:
+            self._set_status("Connected", GOOD)
+            self.on_event(m.GameEvent(kind="info",
+                          message=f"Resolved UnitTable offset structurally at 0x{off:X}."))''',
+    '''        if off:
+            self._set_status("Đang xác minh dữ liệu nhân vật", WARN)
+            self.on_event(m.GameEvent(kind="info",
+                          message=f"Found potential UnitTable at 0x{off:X}; validating character."))''',
+    "do not mark unverified UnitTable green")
+a=change(a,
+    '''        if found:
+            self._set_status("Connected", GOOD)
+            self.diag_hint.configure(text="Offsets found", text_color=GOOD)''',
+    '''        if found:
+            verified = bool(self.reader and getattr(self.reader, "_kvhao_data_valid", False))
+            self._set_status("Đã kết nối" if verified else "Chưa xác minh nhân vật",
+                             GOOD if verified else WARN)
+            self.diag_hint.configure(
+                text="Đã xác minh nhân vật" if verified else "Offset tìm thấy, dữ liệu cần kiểm tra",
+                text_color=GOOD if verified else WARN)''',
+    "diagnostics must not mark bad stats connected")
 app.write_text(a,encoding="utf-8")
 print("KVHao v13: runtime player sanity, fail-closed status, and raw-stat diagnostic report installed")
