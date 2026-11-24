@@ -8,6 +8,7 @@ on:
       - build/kvhao-autopotion-v10-loader-process
       - build/kvhao-autopotion-v11-performance
       - build/kvhao-autopotion-v12-offset-fix
+      - build/kvhao-autopotion-v13-data-validation
     paths:
       - autopotion-build/**
       - .github/workflows/kvhao-autopotion-exe.yml
@@ -77,6 +78,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Performance regression test failed" }
           python autopotion-build/test_offset_v12.py upstream
           if ($LASTEXITCODE -ne 0) { throw "UnitTable scan fallback test failed" }
+      - name: Reject invalid character stats and add raw offset diagnostics
+        run: |
+          python autopotion-build/player_validation_patch.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "v13 validation patch failed" }
+          python -m compileall -q upstream/ui upstream/d2r
+          if ($LASTEXITCODE -ne 0) { throw "v13 patch syntax validation failed" }
+          python autopotion-build/test_player_v13.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "v13 player sanity tests failed" }
       - name: Localize UI safely (Vietnamese, display-only)
         run: |
           python autopotion-build/localize_source.py upstream
@@ -130,17 +139,17 @@ jobs:
           Start D2R via D2RLoader, then launch the EXE separately. It can attach to D2R.exe or D2RLoader.exe as the real game process.
           If not connected, use the Diagnostics tab's "Kiem tra D2RLoader" button.
           If offsets remain unresolved, Diagnostics still supports a full scan.
-          v12 fixes the too-short v11 automatic module scan and optimizes its memory indexing. All background scans remain serialized. Critical HP/MP remain 50ms.
+          v13 adds verified character data gating and raw memory diagnostics. Do not enable unless real HP/MP and level are shown. All background scans remain serialized.
           First verify health/mana/belt memory reads in Diagnostics, then enable.
           Automated gameplay may lead to sanctions on Battle.net Online.
           Interface: Vietnamese UI text with original internal game logic. Localization and packaging: KVHao.
           Original author: DavidPinto; MIT license retained.
           '@ | Set-Content -Path release/README.txt -Encoding utf8
-          Compress-Archive release/* KVHao_AutoPotion_v12_OffsetRecovery_Performance_EXE.zip -Force
+          Compress-Archive release/* KVHao_AutoPotion_v13_DataValidation_Diagnostics_EXE.zip -Force
       - name: Upload EXE release
         uses: actions/upload-artifact@v4
         with:
-          name: KVHao_AutoPotion_v12_OffsetRecovery_Performance_EXE
-          path: KVHao_AutoPotion_v12_OffsetRecovery_Performance_EXE.zip
+          name: KVHao_AutoPotion_v13_DataValidation_Diagnostics_EXE
+          path: KVHao_AutoPotion_v13_DataValidation_Diagnostics_EXE.zip
           if-no-files-found: error
           retention-days: 30
