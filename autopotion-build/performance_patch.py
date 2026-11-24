@@ -79,14 +79,10 @@ a = once(a,
     "                        if now - self._last_discover > 5:",
     "                        if now - self._last_discover > 90:",
     "scan retry throttle")
-a = once(a,
-    "        self.after(150, self._poll)",
-    "        self.after(250, self._poll)",
-    "initial GUI refresh")
-a = once(a,
-    "        self.after(150, self._poll)",
-    "        self.after(250, self._poll)",
-    "repeating GUI refresh")
+if a.count("        self.after(150, self._poll)") != 2:
+    raise RuntimeError("GUI refresh source changed: expected exactly two timers")
+a = a.replace("        self.after(150, self._poll)",
+              "        self.after(250, self._poll)", 2)
 app.write_text(a,encoding="utf-8")
 
 r = reader.read_text(encoding="utf-8")
