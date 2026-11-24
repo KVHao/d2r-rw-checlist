@@ -14,6 +14,9 @@ try:
     assert app._profile_entry.winfo_exists(), "Profile input widget missing"
     assert app.tabs.winfo_exists(), "Tab view missing"
     assert app._loader_check_btn.winfo_exists(), "Loader diagnostic button missing"
+    assert app._kvhao_copy_diag_btn.winfo_exists(), "Diagnostic copy button missing"
+    app._kvhao_copy_diagnostics()
+    assert "Quét offset" in app.diag_hint.cget("text"), "Empty diagnostic text should not claim copied"
     from d2r.process import find_d2rloader_processes, find_d2r_processes
     assert isinstance(find_d2rloader_processes(), list), "Loader discovery must return list"
     assert isinstance(find_d2r_processes(), list), "Game discovery must return list"
