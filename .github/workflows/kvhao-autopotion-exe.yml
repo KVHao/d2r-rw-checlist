@@ -7,6 +7,7 @@ on:
       - build/kvhao-autopotion-v9-loader-diagnostics
       - build/kvhao-autopotion-v10-loader-process
       - build/kvhao-autopotion-v11-performance
+      - build/kvhao-autopotion-v12-offset-fix
     paths:
       - autopotion-build/**
       - .github/workflows/kvhao-autopotion-exe.yml
@@ -66,8 +67,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Performance patch failed" }
           python -m compileall -q upstream/ui upstream/d2r
           if ($LASTEXITCODE -ne 0) { throw "Performance patch syntax failed" }
+      - name: Restore full offset discovery efficiently (v12)
+        run: |
+          python autopotion-build/offset_recovery_patch.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "v12 offset patch failed" }
+          python -m compileall -q upstream/ui upstream/d2r
+          if ($LASTEXITCODE -ne 0) { throw "Offset patch syntax failed" }
           python autopotion-build/test_performance.py upstream
-          if ($LASTEXITCODE -ne 0) { throw "Performance unit tests failed" }
+          if ($LASTEXITCODE -ne 0) { throw "Performance regression test failed" }
+          python autopotion-build/test_offset_v12.py upstream
+          if ($LASTEXITCODE -ne 0) { throw "UnitTable scan fallback test failed" }
       - name: Localize UI safely (Vietnamese, display-only)
         run: |
           python autopotion-build/localize_source.py upstream
@@ -121,17 +130,17 @@ jobs:
           Start D2R via D2RLoader, then launch the EXE separately. It can attach to D2R.exe or D2RLoader.exe as the real game process.
           If not connected, use the Diagnostics tab's "Kiem tra D2RLoader" button.
           If offsets remain unresolved, Diagnostics still supports a full scan.
-          v11 optimizes CPU by preventing concurrent background scans, reducing heavy monster/item reads, and updating UI less often. Critical HP/MP remain 50ms.
+          v12 fixes the too-short v11 automatic module scan and optimizes its memory indexing. All background scans remain serialized. Critical HP/MP remain 50ms.
           First verify health/mana/belt memory reads in Diagnostics, then enable.
           Automated gameplay may lead to sanctions on Battle.net Online.
           Interface: Vietnamese UI text with original internal game logic. Localization and packaging: KVHao.
           Original author: DavidPinto; MIT license retained.
           '@ | Set-Content -Path release/README.txt -Encoding utf8
-          Compress-Archive release/* KVHao_AutoPotion_v11_Performance_Optimized_EXE.zip -Force
+          Compress-Archive release/* KVHao_AutoPotion_v12_OffsetRecovery_Performance_EXE.zip -Force
       - name: Upload EXE release
         uses: actions/upload-artifact@v4
         with:
-          name: KVHao_AutoPotion_v11_Performance_Optimized_EXE
-          path: KVHao_AutoPotion_v11_Performance_Optimized_EXE.zip
+          name: KVHao_AutoPotion_v12_OffsetRecovery_Performance_EXE
+          path: KVHao_AutoPotion_v12_OffsetRecovery_Performance_EXE.zip
           if-no-files-found: error
           retention-days: 30
