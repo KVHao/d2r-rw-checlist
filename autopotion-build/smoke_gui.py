@@ -13,6 +13,15 @@ try:
     assert app.title().startswith("KVHao AutoPotion"), app.title()
     assert app._profile_entry.winfo_exists(), "Profile input widget missing"
     assert app.tabs.winfo_exists(), "Tab view missing"
+    assert app._loader_check_btn.winfo_exists(), "Loader diagnostic button missing"
+    from d2r.process import find_d2rloader_processes, find_d2r_processes
+    assert isinstance(find_d2rloader_processes(), list), "Loader discovery must return list"
+    assert isinstance(find_d2r_processes(), list), "Game discovery must return list"
+    if not find_d2r_processes():
+        app._check_loader_connection()
+        diag = app.diag_box.get("1.0", "end")
+        assert "D2RLoader.exe" in diag, "Loader process explanation missing"
+        assert "D2R.exe" in diag, "Game process explanation missing"
     assert app.reconnect_btn.cget("text") == "Kết nối", "Connect label not translated"
     assert app.hp_name.cget("text") == "Máu", "Health label not translated"
     assert app.mp_name.cget("text") == "Năng lượng", "Mana label not translated"
