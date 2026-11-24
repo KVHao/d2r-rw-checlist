@@ -106,9 +106,5 @@ a=once(a,
     'kind="error", message=f"Không thể kết nối D2R.exe: {exc}"',
     'kind="error", message=f"Không thể kết nối tiến trình game: {exc}"',
     "connect error logging")
-a=once(a,
-    'message = "\\\\n".join(lines)',
-    'message = "\\n".join(lines)',
-    "multiline diagnostics")
 app.write_text(a,encoding="utf-8")
 print("KVHao v10: native D2RLoader.exe game process recognized; UI and watcher safety retained")
