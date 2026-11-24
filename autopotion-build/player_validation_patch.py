@@ -89,10 +89,10 @@ r=change(r,
             # Restore amounts are class-dependent''',
     "full path player validation")
 r=change(r,
-    '''            p = self._read_player(unit)
+    '''        p = self._read_player(unit)
         stats = p["stats"]
         life = stats.get(m.STAT["Life"], 0)''',
-    '''            p = self._read_player(unit)
+    '''        p = self._read_player(unit)
         stats = p["stats"]
         lines.append("")
         lines.append("=== KVHao v13 raw player data (for offset diagnosis) ===")
