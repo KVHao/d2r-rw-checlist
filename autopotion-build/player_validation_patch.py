@@ -132,12 +132,6 @@ a=change(a,
                 self._set_status("Đang xác minh nhân vật…", WARN)''',
     "do not claim connected from offset-only")
 a=change(a,
-    '''        if snap.in_game:
-            self.char_label.configure(''',
-    '''        if snap.in_game:
-            self.char_label.configure(''',
-    "character display anchor check")
-a=change(a,
     '''        else:
             self.char_label.configure(text="No character")
             self.state_label.configure(text="Not in game", text_color="gray60")
@@ -155,6 +149,29 @@ a=change(a,
 
         # With unresolved offsets''',
     "show invalid data instead of fake class")
+a=change(a,
+    '        self._loader_check_btn.pack(side="left", padx=(10, 0))',
+    '''        self._loader_check_btn.pack(side="left", padx=(10, 0))
+        self._kvhao_copy_diag_btn = ctk.CTkButton(
+            top, text="Sao chép báo cáo", width=130, height=28,
+            command=self._kvhao_copy_diagnostics)
+        self._kvhao_copy_diag_btn.pack(side="left", padx=(8, 0))''',
+    "copy diagnostic button")
+a=change(a,
+    '    def _run_scan(self):',
+    '''    def _kvhao_copy_diagnostics(self):
+        """Copy diagnostic report for troubleshooting the actual game build.""\""
+        text = self.diag_box.get("1.0", "end").strip()
+        if not text:
+            self.diag_hint.configure(
+                text="Chạy Quét offset trước khi sao chép", text_color=WARN)
+            return
+        self.clipboard_clear()
+        self.clipboard_append(text)
+        self.diag_hint.configure(text="Đã sao chép báo cáo", text_color=GOOD)
+
+    def _run_scan(self):''',
+    "copy diagnostic command")
 a=change(a,
     '''                    self._update_dashboard(snap)
                     if snap.error and snap.error not in self._shown_errors:''',
